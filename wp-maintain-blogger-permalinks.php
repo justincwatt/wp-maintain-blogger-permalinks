@@ -1,11 +1,15 @@
 <?php
 /*
 Plugin Name: Maintain Blogger Permalinks
-Version: 1.0
-Plugin URI: http://justinsomnia.org/
-Description: Maintain Blogger Permalinks
+Version: 1.1
+Plugin URI: http://justinsomnia.org/2006/10/maintain-permalinks-moving-from-blogger-to-wordpress/
+Description: Update your newly imported Blogger posts with their old Blogger generated URL "slugs"
 Author: Justin Watt
 Author URI: http://justinsomnia.org/
+
+1.1
+Improved success and failure output
+tested with wordpress v2.8.4 and Blogger circa September 2009
 
 1.0
 initial version
@@ -13,7 +17,7 @@ initial version
 LICENSE
 
 wp-maintain-blogger-permalinks.php
-Copyright (C) 2007 Justin Watt
+Copyright (C) 2009 Justin Watt
 justincwatt@gmail.com
 http://justinsomnia.org/
 
@@ -50,19 +54,29 @@ function maintain_blogger_permalinks()
     print "<p><strong>Progress:</strong></p>";
 
     $meta_records = $wpdb->get_results("select * from $wpdb->postmeta where meta_key = 'blogger_permalink'");
+    
+    if (count($meta_records) == 0) {
+      
+      print "Sorry I couldn't find any blogger_permalink custom fields, did you run <a href='import.php'>the Blogger importer</a> yet?";
 
-    foreach ($meta_records as $meta_record) {
-      $blogger_permalink = $meta_record->meta_value;
-      $matches = array();
-      if (preg_match('#/[0-9]{4}/[0-9]{2}/(.*?)\.html$#', trim($blogger_permalink), $matches)) {
-        $blogger_permalink = $matches[1];
-        print $blogger_permalink . '<br />';
-        $sql = "update $wpdb->posts set post_name = '$blogger_permalink' WHERE ID = '$meta_record->post_id'";
-        print $sql . "<br/>";
-        $wpdb->query($sql);
+    } else {
+      $results = '';
+      foreach ($meta_records as $meta_record) {
+        $blogger_permalink = $meta_record->meta_value;
+        $matches = array();
+        if (preg_match('#/[0-9]{4}/[0-9]{2}/(.*?)\.html$#', trim($blogger_permalink), $matches)) {
+          $blogger_permalink = $matches[1];
+          $sql = "update $wpdb->posts set post_name = '$blogger_permalink' WHERE ID = '$meta_record->post_id';";
+          $results .= $sql . "\n";
+          $wpdb->query($sql);
+        }
       }
+      print "Done!<br/>";
+
+      print "<textarea rows='10' cols='80' wrap='off' readonly='readonly'>";
+      print htmlspecialchars($results);
+      print "</textarea>";
     }
-    print "Done!";
 
   
   } else { 
@@ -82,4 +96,3 @@ function maintain_blogger_permalinks()
 
 
 add_action('admin_menu', 'manage_maintain_blogger_permalinks');
-?>
