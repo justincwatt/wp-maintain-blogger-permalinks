@@ -3,12 +3,12 @@
 Plugin Name: Maintain Blogger Permalinks
 Version: 2.0
 Plugin URI: http://justinsomnia.org/2006/10/maintain-permalinks-moving-from-blogger-to-wordpress/
-Description: Update your newly imported Blogger posts with their old Blogger generated URL "slugs". This is a utility plugin that only needs to be run once. After than you can deactivate and delete it.
+Description: Update your newly imported Blogger posts with their old Blogger generated URL "slugs". This is a utility plugin that only needs to be run once. After that you can deactivate and delete it. Goto <a href="tools.php?page=wp-maintain-blogger-permalinks.php">Tools > Maintain Blogger Permalinks</a> to run.
 Author: Justin Watt
 Author URI: http://justinsomnia.org/
 
 2.0
-Add fallback algorithm to generate Blogger-link permalink in the absense of an import-derived meta_key
+Add fallback algorithm to generate Blogger-link permalink in the absense of an import-derived meta_key (primarily for WXR imports)
 
 1.1
 Improved success and failure output
@@ -75,20 +75,22 @@ function maintain_blogger_permalinks()
           $blogger_permalink = title_to_blogger_style_permalink($record->post_title);
         }
         
+        // only update if the permalink is different
         if ($record->post_name != $blogger_permalink && $blogger_permalink != '') {
-        
           $sql = "update $wpdb->posts set post_name = '$blogger_permalink' WHERE ID = '$record->ID';";
           $wpdb->query($sql); 
-          $results .= "Updated \"$record->post_name\" to \"$blogger_permalink\"<br/>";
+          $results .= htmlspecialchars("Updated \"$record->post_name\" to \"$blogger_permalink\"") . "<br/>";
         }       
       }      
       
-      print "<strong>Done!</strong> This is what happened:<br/>";
-      //print "<textarea rows='10' cols='80' wrap='off' readonly='readonly'>";
-      print $results;
-      //print "</textarea>";
+      print "<p><strong>This is what happened:</strong></p>";
+      if ($results == '') {
+        print "<p>Nada</p>";
+      } else {
+        print $results;
+      }
+      print "<p><strong>That's all folks!</strong></p>";
     }
-
   
   } else { 
 
