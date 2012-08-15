@@ -1,11 +1,14 @@
 <?php
 /*
 Plugin Name: Maintain Blogger Permalinks
-Version: 2.0
+Version: 2.1
 Plugin URI: http://justinsomnia.org/2006/10/maintain-permalinks-moving-from-blogger-to-wordpress/
-Description: Update your newly imported Blogger posts with their old Blogger generated URL "slugs". This is a utility plugin that only needs to be run once. After that you can deactivate and delete it. Goto <a href="tools.php?page=wp-maintain-blogger-permalinks.php">Tools > Maintain Blogger Permalinks</a> to run.
+Description: Update your newly imported Blogger posts with their old Blogger generated URL "slugs". This is a utility plugin that only needs to be run once. After that you can deactivate and delete it. Goto <a href="tools.php?page=maintain-blogger-permalinks.php">Tools > Maintain Blogger Permalinks</a> to run.
 Author: Justin Watt
 Author URI: http://justinsomnia.org/
+
+2.1
+Add wp_nonce_field, rename plugin file
 
 2.0
 Add fallback algorithm to generate Blogger-link permalink in the absense of an import-derived meta_key (primarily for WXR imports)
@@ -42,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 function manage_maintain_blogger_permalinks() {
   // Add a new menu under Manage:
-  add_management_page('Maintain Blogger Permalinks', 'Maintain Blogger Permalinks', 10, __FILE__, 'maintain_blogger_permalinks');
+  add_management_page('Maintain Blogger Permalinks', 'Maintain Blogger Permalinks', 'import', __FILE__, 'maintain_blogger_permalinks');
 }
 
 function maintain_blogger_permalinks() 
