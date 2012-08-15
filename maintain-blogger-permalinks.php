@@ -52,7 +52,7 @@ function maintain_blogger_permalinks()
   print "<div class='wrap'>";
   print "<div class='icon32' id='icon-tools'><br/></div><h2>Maintain Blogger Permalinks</h2>";
 
-  if (isset($_POST['function'])) {
+  if (!empty($_POST) && check_admin_referer('maintain-blogger-permalinks-submit')) {
     $records = $wpdb->get_results("select ID, post_title, post_name from $wpdb->posts where post_type='post' and post_status = 'publish'");
 
     if (count($records) == 0) {
@@ -97,6 +97,7 @@ function maintain_blogger_permalinks()
     ?>
     
     <form action='' method='post'>
+    <?php wp_nonce_field('maintain-blogger-permalinks-submit'); ?>
     <input type='submit' class='button' name='function' value='Maintain Blogger Permalinks' />
     </form>
 
